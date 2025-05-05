@@ -1,38 +1,41 @@
 const express = require('express');
 const router = express.Router();
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require('@google/genai');
 
-// Load Gemini API key from .env (make sure you have it set up)
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Set your Gemini API key
+const genAI = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY, // or directly: apiKey: "YOUR_API_KEY"
+});
 
 // Test route
 router.get('/', (req, res) => {
   res.json({ message: 'It is working!' });
 });
 
-// POST route with Gemini integration
+// POST route
 router.post('/', async (req, res) => {
   const input = req.body.name;
   console.log('Received POST data:', input);
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const result = await genAI.models.generateContent({
+      model: 'gemini-1.5-flash', // or 'gemini-1.5-pro' based on your usage
+      contents: [
+        {
+          role: 'user',
+          parts: [{ text: `Write a creative 10-line paragraph about: ${input}` }],
+        },
+      ],
+    });
 
-    const result = await model.generateContent(
-      `Write a creative 10-line paragraph about: ${input}`
-    );
-
-    const response = await result.response;
-    const generatedText = response.text();
-
-    res.json({ 
-      message: 'Data received and processed by Gemini API',
+    res.json({
+      message: 'Gemini response generated',
       original: input,
-      generated: generatedText 
+      generated: result.response.text(),
     });
   } catch (error) {
-    console.error('Gemini API error:', error);
-    res.status(500).json({ error: 'Failed to generate content from Gemini API' });
+    console.error('Gemini API Error:', error);
+    res.status(500).json({ error: 'Failed to generate content' });
   }
 });
 
