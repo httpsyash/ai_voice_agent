@@ -6,8 +6,19 @@ const genAI = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
+// Temporary in-memory storage
+let lastGeneratedText = null;
+
 router.get('/', (req, res) => {
-  res.json({ message: 'It is working!' });
+  console.log(lastGeneratedText);
+  if (lastGeneratedText) {
+    res.json({
+      message: 'Last Gemini response:',
+      generated: lastGeneratedText,
+    });
+  } else {
+    res.json({ message: 'It is working!' });
+  }
 });
 
 router.post('/', async (req, res) => {
@@ -25,16 +36,17 @@ router.post('/', async (req, res) => {
       ],
     });
 
-    // ✅ Corrected: access candidates directly
     const generatedText = result.candidates[0].content.parts[0].text;
-    console.log(generatedText)
+    lastGeneratedText = generatedText; // Save it for GET use
+    
+    console.log(generatedText);
+console.log(lastGeneratedText);
     res.json({
       message: 'Gemini response generated',
       original: input,
       generated: generatedText,
     });
 
-    
   } catch (error) {
     console.error('Gemini API Error:', error);
     res.status(500).json({ error: 'Failed to generate content' });
