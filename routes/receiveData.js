@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
         },
       ],
     });
-    console.log(results);
+    console.log(result);
     // ✅ Get the generated text from the response safely
     const generatedText = result.response.candidates[0].content.parts[0].text;
 
