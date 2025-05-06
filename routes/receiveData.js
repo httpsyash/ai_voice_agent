@@ -27,12 +27,14 @@ router.post('/', async (req, res) => {
 
     // ✅ Corrected: access candidates directly
     const generatedText = result.candidates[0].content.parts[0].text;
-
+    console.log(generatedText)
     res.json({
       message: 'Gemini response generated',
       original: input,
       generated: generatedText,
     });
+
+    
   } catch (error) {
     console.error('Gemini API Error:', error);
     res.status(500).json({ error: 'Failed to generate content' });
