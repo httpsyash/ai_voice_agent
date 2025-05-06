@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
 
   try {
     const result = await genAI.models.generateContent({
-      model: 'gemini-1.5-flash', // or gemini-1.5-pro
+      model: 'gemini-1.5-flash',
       contents: [
         {
           role: 'user',
@@ -24,9 +24,9 @@ router.post('/', async (req, res) => {
         },
       ],
     });
-    console.log(result);
-    // ✅ Get the generated text from the response safely
-    const generatedText = result.response.candidates[0].content.parts[0].text;
+
+    // ✅ Corrected: access candidates directly
+    const generatedText = result.candidates[0].content.parts[0].text;
 
     res.json({
       message: 'Gemini response generated',
