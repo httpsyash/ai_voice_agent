@@ -5,9 +5,9 @@ const { GoogleGenAI } = require('@google/genai');
 const genAI = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
-
+let lasttext=null;
 router.get('/', (req, res) => {
-  res.json({ message: 'It is working!' });
+  res.json({ message: lasttext });
 });
 
 router.post('/', async (req, res) => {
@@ -28,6 +28,7 @@ router.post('/', async (req, res) => {
     // ✅ Corrected: access candidates directly
     const generatedText = result.candidates[0].content.parts[0].text;
     console.log(generatedText)
+    lasttext=generatedText;
     res.json({
       message: 'Gemini response generated',
       original: input,
